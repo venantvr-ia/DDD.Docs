@@ -1242,14 +1242,14 @@ disponibles :
 
 * Utiliser un service d'hébergement gratuit : Il existe plusieurs services d'hébergement de sites web gratuits, tels que
   Wix et AwardSpace, qui vous permettent de stocker votre contenu sur leurs serveurs et de le rendre accessible au
-  public
-  via votre adresse web [1, 3]. Toutefois, il est important de noter que ces services peuvent limiter les
-  fonctionnalités
-  disponibles ou afficher des publicités sur votre site web.
+  public via votre adresse web [1, 3]. Toutefois, il est important de noter que ces services peuvent limiter les
+  fonctionnalités disponibles ou afficher des publicités sur votre site web.
+
 * Vérifier les politiques de votre FAI : Si vous préférez héberger votre contenu sur vos propres serveurs, il est
   important de vérifier que votre fournisseur d'accès à Internet (FAI) vous permet d'héberger un site web sur votre
   connexion. Certains FAI peuvent interdire l'hébergement personnel ou exiger un contrat professionnel plus cher pour
   cela [2].
+
 * Utiliser des plateformes de partage de fichiers : Des plateformes telles que Dropbox, Google Drive ou Mega peuvent
   également être utilisées pour stocker du contenu en ligne et le partager avec d'autres personnes. Toutefois, il est
   important de noter que ces services peuvent également limiter les fonctionnalités disponibles pour les utilisateurs
