@@ -539,7 +539,7 @@ Non, le "from" n'est pas lié à r et s. Le "from" est l'adresse de l'émetteur 
 les composantes de la signature numérique utilisée pour prouver que la transaction a été émise par le propriétaire de la
 clé privée correspondante à l'adresse de l'émetteur.
 
-### r et s changent-ils à chaque fois ?
+### R et s changent-ils à chaque fois ?
 
 Oui, les valeurs de r et s changent à chaque signature car elles sont déterminées en partie par la clé privée utilisée
 pour signer la transaction. Chaque clé privée génère une signature unique pour une transaction donnée.
