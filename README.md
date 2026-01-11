@@ -4,21 +4,18 @@ Documentation sur le Domain-Driven Design appliqué au développement logiciel m
 
 ## Philosophie
 
-En tant que développeur DDD, je privilégie la **spécialisation** plutôt que la réutilisation du code. Cette approche permet d'adapter le code aux besoins spécifiques de chaque situation, facilitant la communication entre les équipes métier et les développeurs pour construire des applications évolutives et solides.
+Le DDD permet de créer des logiciels répondant aux besoins spécifiques de l'entreprise en privilégiant la **spécialisation** plutôt que la réutilisation du code. Cette approche permet d'adapter le code aux besoins de chaque situation, facilitant la communication entre équipes métier et développeurs.
 
 ### Principes clés
 
-- **Code minimaliste** : Chaque ligne de code est nécessaire et testée pour garantir fiabilité et sécurité
-- **Réduction des vulnérabilités** : Moins de code = moins de surface d'attaque
-- **Qualité élevée** : Tests rigoureux et conception orientée domaine
-- **Agilité** : Capacité à pivoter rapidement en cas de changement de besoins
+- **Code minimaliste** : Chaque ligne de code est nécessaire et testée
+- **Sécurité renforcée** : Moins de code = moins de surface d'attaque
+- **Agilité** : Capacité à pivoter rapidement selon les besoins métier
+- **Qualité** : Tests rigoureux et conception orientée domaine
 
-### Avantages du DDD
+### Le plus court chemin
 
-1. **Réduction de la dette technique** : Code clair et concis reflétant les processus métier
-2. **Meilleure sécurité** : Réduction des risques de vulnérabilités
-3. **Flexibilité** : Adaptation rapide aux changements du marché
-4. **Communication** : Langage ubiquitaire partagé entre développeurs et experts métier
+> Tracer le plus court chemin entre le besoin métier et le code, en créant des solutions simples et puissantes qui permettent aux entreprises d'être plus agiles et compétitives.
 
 ## Contenu
 
@@ -29,7 +26,3 @@ En tant que développeur DDD, je privilégie la **spécialisation** plutôt que 
 - [Blockchain](blockchain.md) - Application blockchain
 - [Regulations](regulations.md) - Conformité réglementaire
 - [Mono-repo](mono-repo.md) - Organisation du code
-
-## Le plus court chemin
-
-> Tracer le plus court chemin entre le besoin métier et le code, en créant des solutions logicielles simples et puissantes qui permettent aux entreprises d'être plus agiles, plus innovantes et plus compétitives.
