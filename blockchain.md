@@ -6,16 +6,25 @@ Application des principes DDD à l'architecture blockchain et aux smart contract
 
 Il est possible de créer un service-bus décentralisé en utilisant une blockchain. Chaque service est représenté par un nœud qui communique via des smart contracts.
 
-### Architecture
+```pseudo
+// Principe du Service-Bus décentralisé sur Blockchain
+// Au lieu d'un bus de messages centralisé (RabbitMQ, Kafka...),
+// on utilise la blockchain comme intermédiaire immuable et transparent.
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Service A  │────▶│  Blockchain │◀────│  Service B  │
-└─────────────┘     │   (Smart    │     └─────────────┘
-                    │  Contract)  │
-┌─────────────┐     └─────────────┘     ┌─────────────┐
-│  Service C  │────────────┴────────────│  Service D  │
-└─────────────┘                         └─────────────┘
+SERVICE_BUS Blockchain:
+
+    // Publication d'un message (= transaction blockchain)
+    Service_A.publier("CommandeCréée", données):
+        smart_contract.enregistrer_événement("CommandeCréée", données)
+        // La transaction est minée et devient immuable
+
+    // Souscription (= écoute des événements du smart contract)
+    Service_B.souscrire("CommandeCréée"):
+        QUAND smart_contract ÉMET "CommandeCréée":
+            traiter(données)
+
+    // Avantage : aucun service central ne peut tomber en panne
+    // Inconvénient : chaque message coûte du "gas" (frais de transaction)
 ```
 
 ### Avantages
@@ -93,3 +102,29 @@ Le smart contract agit comme :
 - **Aggregate Root** : Gère la cohérence des données
 - **Repository** : Stocke l'état sur la blockchain
 - **Domain Service** : Exécute la logique métier
+
+```pseudo
+// Mapping entre concepts DDD et concepts Blockchain
+
+CONCEPT DDD            →  CONCEPT BLOCKCHAIN
+─────────────────────────────────────────────────────
+Aggregate Root         →  Smart Contract
+    // Le smart contract est le gardien de la cohérence
+    // Toute modification passe par ses fonctions publiques
+
+Repository             →  État du Smart Contract (storage)
+    // Les données sont persistées directement sur la blockchain
+    // Immuable et auditable par nature
+
+Domain Event           →  Event Solidity (emit)
+    // Les événements Solidity sont les Domain Events
+    // Ils sont loggés sur la blockchain et accessibles à tous
+
+Domain Service         →  Fonction du Smart Contract
+    // La logique métier est encodée dans les fonctions
+    // Elle est exécutée de manière déterministe par tous les nœuds
+
+Value Object           →  Struct Solidity
+    // Les structs Solidity sont des VO naturels
+    // Elles regroupent des données liées sans identité propre
+```

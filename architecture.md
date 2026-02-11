@@ -8,6 +8,20 @@ Les patterns fondamentaux du Domain-Driven Design pour structurer et organiser l
 
 Un objet qui a une identité unique et qui persiste dans le temps. Les entités représentent généralement des éléments du domaine métier ayant une identité et une durée de vie.
 
+```pseudo
+// Principe d'une Entité
+// Deux entités sont égales SI ET SEULEMENT SI elles ont le même identifiant,
+// même si leurs autres attributs diffèrent.
+
+ENTITÉ Client:
+    identifiant : unique, immuable    // C'est ÇA qui définit l'entité
+    nom         : modifiable
+    email       : modifiable
+
+    RÈGLE: Client(id="C001", nom="Alice") == Client(id="C001", nom="Alice Martin")
+    // Vrai ! Même identifiant = même entité, peu importe les autres champs
+```
+
 ```python
 class Client:
     def __init__(self, client_id: str, nom: str, email: str):
@@ -31,6 +45,22 @@ class Client:
 ### Value Object (Objet de valeur)
 
 Un objet qui n'a pas d'identité unique et qui est immuable. Les objets de valeur sont utilisés pour représenter des concepts ou des propriétés du domaine métier sans identité propre.
+
+```pseudo
+// Principe d'un Value Object
+// Deux VO sont égaux SI ET SEULEMENT SI toutes leurs valeurs sont identiques.
+// Un VO est immuable : on ne le modifie pas, on en crée un nouveau.
+
+VALEUR Email:
+    adresse : immuable
+
+    RÈGLE: Email("alice@mail.com") == Email("alice@mail.com")   // Vrai ! Même valeur
+    RÈGLE: Email("alice@mail.com") != Email("bob@mail.com")     // Faux, valeurs différentes
+
+    // Pour "modifier" un VO, on en crée un nouveau
+    ancien = Email("alice@old.com")
+    nouveau = Email("alice@new.com")   // Nouvel objet, l'ancien reste intact
+```
 
 ```python
 class Email:
@@ -63,6 +93,25 @@ class Email:
 ### Aggregate (Agrégat)
 
 Un ensemble d'entités et d'objets de valeur qui forment une unité cohérente. Les agrégats sont traités comme une seule unité pour les opérations de persistance et de modification, et ils garantissent la consistance du domaine métier.
+
+```pseudo
+// Principe d'un Agrégat
+// L'agrégat est un cluster d'objets avec une "Racine" qui contrôle tout l'accès.
+// Le monde extérieur ne parle QU'À la racine, jamais aux objets internes.
+
+AGRÉGAT Commande:                          // "Commande" est la Racine d'Agrégat
+    contient LigneCommande[]               // Entités internes
+    contient AdresseLivraison              // Value Object interne
+
+    // Accès depuis l'extérieur :
+    AUTORISÉ  : commande.ajouter_ligne(produit, quantité)   // Via la racine
+    INTERDIT  : commande.lignes[0].modifier_prix(100)       // Accès direct interdit
+
+    // La racine protège les invariants (règles métier) :
+    INVARIANT : commande.total >= 0
+    INVARIANT : commande.lignes.count >= 1 POUR valider
+    INVARIANT : commande.adresse EST obligatoire POUR valider
+```
 
 #### Caractéristiques des agrégats
 
@@ -139,6 +188,23 @@ Un événement qui représente un changement d'état significatif dans le domain
 
 Les événements sont **immuables** : une fois créés, ils ne peuvent pas être modifiés. Cela garantit la fiabilité et la traçabilité.
 
+```pseudo
+// Principe d'un Domain Event
+// Un événement dit "il s'est passé quelque chose" au passé.
+// Il est immuable : on ne modifie JAMAIS un événement déjà émis.
+
+ÉVÉNEMENT CommandeValidée:
+    quoi    : id_commande, id_client, montant_total
+    quand   : horodatage
+    immuable: OUI  // Une fois créé, plus jamais modifié
+
+// Un événement déclenche des réactions dans d'autres parties du système
+QUAND CommandeValidée EST émis:
+    Service_Paiement   RÉAGIT EN lançant le prélèvement
+    Service_Stock      RÉAGIT EN réservant les articles
+    Service_Notification RÉAGIT EN envoyant un email de confirmation
+```
+
 ```python
 from dataclasses import dataclass
 from datetime import datetime
@@ -155,6 +221,23 @@ class OrderValidated:
 ### Repository (Dépôt)
 
 Un pattern qui fournit des méthodes pour stocker, récupérer et gérer les agrégats et les entités. Les dépôts abstraient la logique de persistance et permettent d'interagir avec les objets du domaine sans se soucier de la manière dont ils sont stockés.
+
+```pseudo
+// Principe d'un Repository
+// Le domaine demande "sauvegarde cette commande" ou "trouve cette commande"
+// SANS savoir si c'est stocké en SQL, MongoDB, fichier, ou mémoire.
+
+INTERFACE DépôtCommande:
+    sauvegarder(commande)                    // Persister un agrégat
+    trouver_par_id(id) → Commande            // Récupérer par identifiant
+    trouver_par_client(id_client) → Liste     // Rechercher
+
+// Le domaine utilise l'interface, l'infrastructure fournit l'implémentation
+IMPLÉMENTATION SQL  : stocke en base de données relationnelle
+IMPLÉMENTATION Mongo : stocke en base de données document
+IMPLÉMENTATION Test  : stocke en mémoire pour les tests unitaires
+// Le code métier ne change JAMAIS quand on change de base de données
+```
 
 ```python
 from abc import ABC, abstractmethod
@@ -189,6 +272,23 @@ class SqlOrderRepository(OrderRepository):
 
 Un pattern utilisé pour encapsuler la logique de création et d'initialisation des objets du domaine. Les fabriques permettent de centraliser et de simplifier la création d'objets complexes.
 
+```pseudo
+// Principe d'une Factory
+// Quand créer un objet nécessite plusieurs étapes ou règles,
+// on encapsule cette logique dans une Factory.
+
+FABRIQUE CommandeFactory:
+    créer_depuis_panier(panier, client) → Commande:
+        commande = nouvelle Commande(id=générer_id(), client=client.id)
+        commande.définir_adresse(client.adresse_par_défaut)
+        POUR CHAQUE article DANS panier:
+            commande.ajouter_ligne(article.produit, article.quantité)
+        RETOURNER commande
+
+// Sans Factory : le code de création est dupliqué partout
+// Avec Factory : un seul endroit pour créer, un seul endroit à modifier
+```
+
 ```python
 class OrderFactory:
     @staticmethod
@@ -209,6 +309,25 @@ class OrderFactory:
 ### Service (Service métier)
 
 Un pattern utilisé pour encapsuler des opérations métier qui ne sont pas naturellement associées à un objet spécifique du domaine. Les services métier sont des opérations indépendantes des objets sur lesquels ils opèrent et sont souvent sans état.
+
+```pseudo
+// Principe d'un Service
+// Certaines opérations n'appartiennent à aucune entité en particulier.
+// Le paiement n'est ni la responsabilité de la Commande, ni du Client.
+// C'est un Service qui orchestre l'opération.
+
+SERVICE PaiementService:
+    SANS ÉTAT                    // Pas de données internes
+    DÉPEND DE passerelle_paiement, dépôt_commandes
+
+    traiter_paiement(id_commande, moyen_paiement) → Résultat:
+        commande = dépôt_commandes.trouver(id_commande)
+        résultat = passerelle_paiement.débiter(commande.total, moyen_paiement)
+        SI résultat.succès ALORS
+            commande.marquer_comme_payée(résultat.id_transaction)
+            dépôt_commandes.sauvegarder(commande)
+        RETOURNER résultat
+```
 
 ```python
 class PaymentService:

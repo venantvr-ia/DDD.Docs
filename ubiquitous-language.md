@@ -16,6 +16,20 @@ En définissant et en utilisant un langage commun, les membres de l'équipe réd
 
 Par exemple, si l'équipe métier parle de "client" et que les développeurs utilisent le terme "utilisateur" pour désigner la même entité, cela peut créer de la confusion. L'Ubiquitous Language établit un terme unique que tout le monde utilise de manière cohérente.
 
+```pseudo
+// Le problème SANS langage ubiquitaire
+Expert_Métier dit : "Le client passe une commande"
+Développeur code : créer Utilisateur.soumettre_requête()
+Testeur écrit   : "Vérifier que le user fait un order"
+// Résultat : 3 vocabulaires différents = confusion garantie
+
+// La solution AVEC langage ubiquitaire
+Expert_Métier dit : "Le client passe une commande"
+Développeur code : créer Client.passer_commande()
+Testeur écrit   : "Vérifier que le Client passe une Commande"
+// Résultat : 1 seul vocabulaire = compréhension partagée
+```
+
 ## Documentation et code
 
 L'Ubiquitous Language doit être intégré à la fois dans la documentation du projet et dans le code source lui-même, afin de garantir une cohérence dans l'ensemble du cycle de vie du développement logiciel et de faciliter la maintenance et l'évolution du logiciel.
@@ -68,6 +82,32 @@ Réunir experts métier et développeurs pour identifier :
 - Les agrégats concernés
 - Le vocabulaire associé
 
+```pseudo
+// Déroulement d'un atelier Event Storming
+ATELIER EventStorming(experts, développeurs):
+
+    // Phase 1 : Brainstorm des événements
+    événements = CHAQUE participant ÉCRIT les événements métier qu'il connaît
+    // Ex: "Commande passée", "Paiement reçu", "Colis expédié"
+
+    // Phase 2 : Chronologie
+    timeline = Ordonner(événements) PAR ordre_chronologique
+
+    // Phase 3 : Identifier les déclencheurs
+    POUR CHAQUE événement DANS timeline:
+        commande = Quelle_Action_Déclenche(événement)
+        acteur   = Qui_Déclenche(commande)
+        // Ex: Client → Passer_Commande → "Commande passée"
+
+    // Phase 4 : Regrouper en agrégats
+    agrégats = Regrouper(événements) PAR cohérence_métier
+    // Ex: {Commande: ["passée", "validée", "annulée"]}
+
+    // Phase 5 : Extraire le vocabulaire
+    glossaire = Extraire_Termes_Communs(événements, commandes, agrégats)
+    RETOURNER glossaire  // C'est le Langage Ubiquitaire
+```
+
 ### Glossaire partagé
 
 Maintenir un document vivant contenant :
@@ -82,6 +122,23 @@ Lors des revues de code, vérifier que :
 - Les noms de classes correspondent au vocabulaire métier
 - Les méthodes sont nommées selon les actions du domaine
 - Les commentaires utilisent le langage ubiquitaire
+
+```pseudo
+// Checklist de revue de code orientée domaine
+REVUE_CODE(pull_request):
+
+    POUR CHAQUE classe DANS pull_request:
+        VÉRIFIER classe.nom EXISTE DANS glossaire
+        // NON : "OrderMgr" → OUI : "GestionnaireCommande"
+
+    POUR CHAQUE méthode DANS pull_request:
+        VÉRIFIER méthode.nom REFLÈTE action_métier
+        // NON : "process()" → OUI : "valider_commande()"
+
+    POUR CHAQUE variable DANS pull_request:
+        VÉRIFIER variable.nom EST compréhensible_par_expert_métier
+        // NON : "tmp_val" → OUI : "montant_total"
+```
 
 ## Bénéfices
 
