@@ -14,6 +14,34 @@ Pour ce faire, on travaille en étroite collaboration avec les experts métier p
 
 En écrivant du code minimaliste, chaque ligne de code est nécessaire et a été testée pour garantir sa fiabilité et sa sécurité. Cela contribue à réduire les risques de vulnérabilités et de failles de sécurité, et permet de garantir une qualité de code élevée.
 
+```pseudo
+// Le processus DDD en action
+PROCESSUS DeveloppementDDD:
+
+    // 1. Découverte du domaine avec les experts métier
+    domaine = Explorer(contexte_métier)
+    langage = Définir_Langage_Ubiquitaire(domaine, experts, développeurs)
+
+    // 2. Modélisation collaborative
+    modèle = Modéliser(domaine)
+        AVEC entités       = Identifier_Objets_Avec_Identité(domaine)
+        AVEC valeurs       = Identifier_Concepts_Immuables(domaine)
+        AVEC agrégats      = Regrouper_Par_Cohérence(entités, valeurs)
+        AVEC événements    = Capturer_Changements_État(domaine)
+
+    // 3. Implémentation minimaliste
+    code = Implémenter(modèle)
+        OÙ chaque_ligne EST nécessaire
+        ET  chaque_ligne EST testée
+        ET  le_vocabulaire CORRESPOND AU langage
+
+    // 4. Validation continue
+    POUR CHAQUE changement_métier:
+        Adapter(modèle, changement_métier)
+        Refactorer(code, modèle)
+        Valider(tests)
+```
+
 ## Avantages du DDD
 
 ### Réduction de la dette technique
@@ -46,11 +74,49 @@ Le Domain-Driven Design permet de réduire la dette technique en se concentrant 
 
 3. **Évolutivité** : En se concentrant sur une conception de logiciel de haute qualité, le DDD permet de créer des logiciels qui sont plus faciles à modifier et à mettre à jour au fil du temps. Cela permet d'éviter les bogues et les erreurs causées par des modifications de code mal conçues.
 
+```pseudo
+// Comparaison : approche classique vs DDD
+
+APPROCHE Classique:
+    besoin = Recevoir_Spécification()
+    code = Coder_Directement(besoin)          // Interprétation libre du dev
+    SI besoin_change ALORS
+        dette += Patcher(code)                // Accumulation de patches
+        dette += Contourner(ancien_code)      // Workarounds
+    // Résultat : code fragile, coûteux à maintenir
+
+APPROCHE DDD:
+    besoin = Co_Construire_Avec_Expert()
+    modèle = Modéliser_Le_Domaine(besoin)     // Compréhension partagée
+    code = Implémenter(modèle)                // Le code reflète le métier
+    SI besoin_change ALORS
+        modèle = Adapter(modèle, nouveau_besoin)
+        code = Refactorer(code, modèle)       // Évolution naturelle
+    // Résultat : code aligné, dette minimale
+```
+
 ## Volume de code et sécurité
 
 Le volume de code peut avoir un impact significatif sur la sécurité d'une application. En général, plus il y a de code, plus il y a de chances qu'il y ait des vulnérabilités de sécurité. Cela est dû au fait que chaque ligne de code peut potentiellement introduire une faille de sécurité, qu'il s'agisse d'une mauvaise gestion des entrées utilisateur, d'une vulnérabilité de débordement de tampon ou d'une autre faiblesse de sécurité.
 
 De plus, un grand volume de code peut rendre l'audit et la maintenance de la sécurité plus difficiles. Les équipes de sécurité doivent examiner chaque ligne de code pour détecter les vulnérabilités, ce qui peut être fastidieux et prendre beaucoup de temps.
+
+```pseudo
+// Relation entre volume de code et surface d'attaque
+
+surface_attaque = FONCTION(volume_code):
+    POUR CHAQUE ligne DANS code:
+        SI ligne traite entrée_utilisateur SANS validation:
+            surface_attaque += risque_injection
+        SI ligne manipule mémoire SANS contrôle:
+            surface_attaque += risque_débordement
+        SI ligne expose donnée SANS chiffrement:
+            surface_attaque += risque_fuite
+    RETOURNER surface_attaque
+
+// Principe DDD : moins de code = moins de surface d'attaque
+// 10 000 lignes testées > 100 000 lignes non auditées
+```
 
 ## Contenu de la documentation
 

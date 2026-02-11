@@ -13,9 +13,48 @@ L'Actor Model est une approche de la programmation concurrente qui permet de con
 - Peut créer d'autres acteurs
 - Peut envoyer des messages à d'autres acteurs
 
+```pseudo
+// Principe fondamental de l'Actor Model
+// Chaque acteur est isolé : pas de mémoire partagée, pas de verrou (lock).
+// Toute communication se fait par messages asynchrones.
+
+ACTEUR TraitementCommande:
+    état_interne : compteur_commandes = 0     // Privé, inaccessible de l'extérieur
+
+    QUAND reçoit message:
+        SI message.type == "NouvelleCommande":
+            compteur_commandes += 1
+            valider(message.données)
+            ENVOYER message "CommandeValidée" À acteur_paiement   // Asynchrone
+            ENVOYER message "RéserverStock" À acteur_stock        // Asynchrone
+
+        SI message.type == "Erreur":
+            CRÉER acteur_compensation POUR gérer l'erreur
+
+// Aucun acteur n'attend la réponse d'un autre = pas de blocage
+// Chaque acteur traite UN message à la fois = pas de concurrence interne
+```
+
 ### Domain Events
 
 Le Domain Events est une technique de conception de logiciels qui consiste à modéliser les événements du domaine de l'application sous forme d'objets et à les utiliser pour déclencher des actions dans le système. Un événement du domaine représente quelque chose qui s'est passé et qui est significatif pour le métier.
+
+```pseudo
+// Cycle de vie d'un Domain Event
+// 1. Quelque chose se passe dans le domaine
+// 2. Un événement est créé (immuable)
+// 3. L'événement est publié
+// 4. Les abonnés réagissent
+
+action = Client.passer_commande(panier)
+événement = CommandePassée(id, client, montant, horodatage)  // Immuable
+bus_événements.publier(événement)
+
+// Chaque abonné réagit indépendamment
+abonné_stock       : RÉAGIR À CommandePassée → réserver_articles()
+abonné_comptabilité: RÉAGIR À CommandePassée → créer_facture()
+abonné_analytics   : RÉAGIR À CommandePassée → enregistrer_métrique()
+```
 
 ## RabbitMQ et Thespian
 
@@ -183,6 +222,27 @@ L'Event-Sourcing est une approche de la gestion de l'état d'un système qui con
 - **Auditabilité** : Historique complet de toutes les actions
 - **Résilience** : Possibilité de rejouer les événements
 - **Debug facilité** : On peut reproduire exactement une situation passée
+
+```pseudo
+// Event Sourcing vs stockage classique
+
+APPROCHE Classique (CRUD):
+    compte.solde = 1000          // On ne sait pas COMMENT on est arrivé là
+    compte.solde = 800           // L'ancien état est perdu
+
+APPROCHE Event Sourcing:
+    événements = [
+        CompteOuvert(montant=0),              // Solde: 0
+        DépôtEffectué(montant=1000),          // Solde: 1000
+        RetraitEffectué(montant=200),          // Solde: 800
+    ]
+    // On peut recalculer le solde à N'IMPORTE quel moment
+    solde_actuel = Rejouer(événements)         // = 800
+    solde_hier   = Rejouer(événements, avant=hier)  // = 1000
+
+    // On peut aussi répondre à des questions business :
+    // "Combien de retraits ce mois-ci ?" → Filtrer(événements, type=Retrait)
+```
 
 ### Implémentation
 

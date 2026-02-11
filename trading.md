@@ -14,6 +14,36 @@ Le grid trading est une stratégie de trading qui consiste à acheter et vendre 
 4. Placer des ordres de vente en haut de la grille
 5. Quand un ordre est exécuté, un nouvel ordre est placé au niveau opposé
 
+```pseudo
+// Algorithme simplifié du Grid Trading
+ALGORITHME GridTrading(prix_haut, prix_bas, taille_grille, quantité):
+
+    // Étape 1 : Construire la grille de niveaux de prix
+    niveaux = []
+    prix_courant = prix_bas
+    TANT QUE prix_courant <= prix_haut:
+        niveaux.ajouter(prix_courant)
+        prix_courant += taille_grille
+
+    // Étape 2 : Placer les ordres initiaux
+    POUR CHAQUE niveau DANS niveaux:
+        SI niveau < prix_marché_actuel:
+            placer_ordre(ACHAT, niveau, quantité)    // Acheter bas
+        SINON:
+            placer_ordre(VENTE, niveau, quantité)     // Vendre haut
+
+    // Étape 3 : Boucle de trading (réaction aux exécutions)
+    BOUCLE INFINIE:
+        POUR CHAQUE ordre_exécuté:
+            SI ordre_exécuté.côté == ACHAT:
+                // On a acheté bas → on place une vente un cran au-dessus
+                placer_ordre(VENTE, ordre_exécuté.prix + taille_grille, quantité)
+            SINON:
+                // On a vendu haut → on place un achat un cran en-dessous
+                placer_ordre(ACHAT, ordre_exécuté.prix - taille_grille, quantité)
+        // Profit = accumulation des écarts entre achats et ventes
+```
+
 ### Paramètres clés
 
 | Paramètre | Description |
@@ -150,6 +180,33 @@ L'optimisation de la grille peut utiliser des données historiques et des techni
 
 5. **Optimiser les paramètres** : Utiliser les prédictions pour ajuster la grille
 
+```pseudo
+// Pipeline d'optimisation ML pour le Grid Trading
+PIPELINE OptimisationGrille:
+
+    // 1. Collecte
+    données_brutes = télécharger_OHLCV(symbole="BTC/USDT", période="1an")
+
+    // 2. Préparation
+    données_normalisées = normaliser(données_brutes, entre=0 et 1)
+    fenêtres = découper_en_séquences(données_normalisées, taille=60)
+    // Chaque fenêtre = 60 périodes passées → 1 prédiction future
+
+    // 3. Entraînement
+    modèle = CNN ou LSTM
+    modèle.entraîner(fenêtres, avec validation_croisée=20%)
+
+    // 4. Prédiction
+    prix_prédit = modèle.prédire(dernières_60_périodes)
+
+    // 5. Optimisation des paramètres de grille
+    meilleurs_params = POUR CHAQUE combinaison(taille_grille, prix_haut, prix_bas):
+        profit = simuler_trading(données_historiques, combinaison)
+        garder SI profit EST le meilleur
+
+    RETOURNER meilleurs_params
+```
+
 ### Modèle CNN pour prédiction de prix
 
 ```python
@@ -272,7 +329,26 @@ class GridOptimizer:
 
 ## Value Objects pour le Trading
 
-Objets de valeur spécifiques au domaine du trading :
+Objets de valeur spécifiques au domaine du trading. Les Value Objects encapsulent les règles de validation propres au domaine financier, garantissant que les données invalides ne peuvent jamais circuler dans le système :
+
+```pseudo
+// Pourquoi des Value Objects en trading ?
+// Chaque concept financier porte ses propres règles de validation.
+
+VALEUR Money(montant, devise):
+    INVARIANT : montant >= 0
+    INVARIANT : devise EST une devise reconnue (EUR, USD, BTC...)
+    RÈGLE    : Money(100, "EUR") + Money(50, "EUR") = Money(150, "EUR")
+    RÈGLE    : Money(100, "EUR") + Money(50, "USD") → ERREUR  // Devises incompatibles
+
+VALEUR TradingPair(base, quote):
+    INVARIANT : base != quote                // "BTC/BTC" n'a pas de sens
+    EXEMPLE   : TradingPair("BTC", "USDT")   // Paire Bitcoin/Tether
+
+VALEUR PriceLevel(prix, côté):
+    INVARIANT : prix > 0
+    INVARIANT : côté DANS {ACHAT, VENTE}
+```
 
 ```python
 from dataclasses import dataclass
@@ -318,7 +394,30 @@ class PriceLevel:
 
 ## Domain Events pour le Trading
 
-Événements typiques du domaine trading :
+Événements typiques du domaine trading. Chaque événement capture un fait métier significatif qui s'est produit et qui ne peut plus être modifié :
+
+```pseudo
+// Cycle de vie d'un trade en événements
+// Chaque étape du trade émet un événement immuable
+
+1. Trader décide d'acheter
+   → ÉMET OrdrePlacé(symbole="BTC/USDT", côté=ACHAT, prix=50000, quantité=0.1)
+
+2. L'exchange exécute l'ordre
+   → ÉMET OrdreExécuté(prix_exécution=49950, commission=0.001)
+
+3. Une position est maintenant ouverte
+   → ÉMET PositionOuverte(prix_entrée=49950, quantité=0.1)
+
+4a. Le prix monte, on vend
+   → ÉMET PositionFermée(prix_sortie=52000, gain=205)
+
+4b. Le prix chute, le stop-loss se déclenche
+   → ÉMET StopLossDéclenché(prix_déclenchement=48000)
+   → ÉMET PositionFermée(prix_sortie=48000, perte=-195)
+
+// Grâce à ces événements, on peut reconstruire tout l'historique de trading
+```
 
 ```python
 from dataclasses import dataclass
