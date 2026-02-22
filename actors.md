@@ -285,18 +285,13 @@ Les événements du domaine peuvent être utilisés pour faciliter l'intégratio
 
 ### Architecture
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Service    │     │  RabbitMQ   │     │  Service    │
-│  Commandes  │────▶│  (Topics)   │◀────│  Stock      │
-└─────────────┘     └──────┬──────┘     └─────────────┘
-                           │
-                    ┌──────┴──────┐
-                    │             │
-              ┌─────┴─────┐ ┌─────┴─────┐
-              │  Service  │ │  Service  │
-              │  Paiement │ │  Notif    │
-              └───────────┘ └───────────┘
+```mermaid
+graph TD
+    Commandes["Service Commandes"] -->|publish| RabbitMQ["RabbitMQ (Topics)"]
+    Stock["Service Stock"] -->|publish| RabbitMQ
+    RabbitMQ --> Paiement["Service Paiement"]
+    RabbitMQ --> Notif["Service Notif"]
 ```
 
 Chaque service publie ses événements et s'abonne aux événements qui l'intéressent, créant ainsi une architecture réactive et scalable.
+
