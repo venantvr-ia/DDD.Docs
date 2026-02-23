@@ -145,3 +145,7 @@ Le candidat idéal a une solide expérience en développement DDD, avec une conn
 - Capacité à écrire du code minimaliste et testé
 - Communication efficace avec les équipes métier
 - Compréhension des enjeux de sécurité
+
+## Stack
+
+[![Stack](https://skillicons.dev/icons?i=rabbitmq&theme=dark)](https://skillicons.dev)
