@@ -148,4 +148,4 @@ Le candidat idéal a une solide expérience en développement DDD, avec une conn
 
 ## Stack
 
-[![Stack](https://skillicons.dev/icons?i=rabbitmq&theme=dark)](https://skillicons.dev)
+[![Stack](https://skillicons.dev/icons?i=dotnet,rabbitmq&theme=dark)](https://skillicons.dev)
