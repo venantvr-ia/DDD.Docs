@@ -471,39 +471,24 @@ class StopLossTriggered:
 
 ## Architecture complète
 
-```
-trading/
-├── domain/
-│   ├── entities/
-│   │   ├── order.py
-│   │   ├── position.py
-│   │   └── grid.py
-│   ├── value_objects/
-│   │   ├── money.py
-│   │   ├── price.py
-│   │   └── quantity.py
-│   ├── events/
-│   │   ├── order_events.py
-│   │   └── position_events.py
-│   └── services/
-│       ├── grid_calculator.py
-│       └── risk_manager.py
-├── application/
-│   ├── use_cases/
-│   │   ├── place_grid_orders.py
-│   │   └── adjust_grid.py
-│   └── event_handlers/
-│       └── order_filled_handler.py
-├── infrastructure/
-│   ├── exchange/
-│   │   ├── binance_adapter.py
-│   │   └── exchange_interface.py
-│   └── persistence/
-│       └── order_repository.py
-└── ml/
-    ├── models/
-    │   ├── price_predictor.py
-    │   └── grid_optimizer.py
-    └── data/
-        └── data_loader.py
+```mermaid
+graph TD
+    ROOT["trading/"] --> DOMAIN["domain/"]
+    ROOT --> APPLICATION["application/"]
+    ROOT --> INFRASTRUCTURE["infrastructure/"]
+    ROOT --> ML["ml/"]
+
+    DOMAIN --> ENT["entities/<br/><i>order.py, position.py, grid.py</i>"]
+    DOMAIN --> VO["value_objects/<br/><i>money.py, price.py, quantity.py</i>"]
+    DOMAIN --> EVT["events/<br/><i>order_events.py, position_events.py</i>"]
+    DOMAIN --> SVC["services/<br/><i>grid_calculator.py, risk_manager.py</i>"]
+
+    APPLICATION --> UC["use_cases/<br/><i>place_grid_orders.py, adjust_grid.py</i>"]
+    APPLICATION --> EH["event_handlers/<br/><i>order_filled_handler.py</i>"]
+
+    INFRASTRUCTURE --> EX["exchange/<br/><i>binance_adapter.py, exchange_interface.py</i>"]
+    INFRASTRUCTURE --> PER["persistence/<br/><i>order_repository.py</i>"]
+
+    ML --> MOD["models/<br/><i>price_predictor.py, grid_optimizer.py</i>"]
+    ML --> DAT["data/<br/><i>data_loader.py</i>"]
 ```

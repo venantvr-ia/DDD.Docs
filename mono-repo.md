@@ -183,19 +183,22 @@ CLASSE ExportXML: ...    // Jamais utilisé
 
 ### Structure type
 
-```
-mono-repo/
-├── packages/
-│   ├── domain/           # Objets métier
-│   ├── infrastructure/   # Persistance, messaging
-│   ├── application/      # Use cases
-│   └── api/              # Interfaces externes
-├── shared/
-│   ├── utils/
-│   └── types/
-└── tools/
-    ├── build/
-    └── deploy/
+```mermaid
+graph TD
+    MR["mono-repo/"] --> PKG["packages/"]
+    MR --> SH["shared/"]
+    MR --> TL["tools/"]
+
+    PKG --> DOM["domain/<br/><i>Objets métier</i>"]
+    PKG --> INFRA["infrastructure/<br/><i>Persistance, messaging</i>"]
+    PKG --> APP["application/<br/><i>Use cases</i>"]
+    PKG --> API["api/<br/><i>Interfaces externes</i>"]
+
+    SH --> UTILS["utils/"]
+    SH --> TYPES["types/"]
+
+    TL --> BUILD["build/"]
+    TL --> DEPLOY["deploy/"]
 ```
 
 ### Avantages
@@ -209,11 +212,16 @@ mono-repo/
 
 Chaque package représente un Bounded Context DDD :
 
-```
-├── trading/          # Contexte Trading
-├── risk/             # Contexte Risk Management
-├── compliance/       # Contexte Compliance
-└── shared-kernel/    # Concepts partagés
+```mermaid
+graph TD
+    BC["Bounded Contexts"] --> TR["trading/<br/><i>Contexte Trading</i>"]
+    BC --> RI["risk/<br/><i>Contexte Risk Management</i>"]
+    BC --> CO["compliance/<br/><i>Contexte Compliance</i>"]
+    BC --> SK["shared-kernel/<br/><i>Concepts partagés</i>"]
+
+    SK -.-> TR
+    SK -.-> RI
+    SK -.-> CO
 ```
 
 ```pseudo

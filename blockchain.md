@@ -103,28 +103,27 @@ Le smart contract agit comme :
 - **Repository** : Stocke l'état sur la blockchain
 - **Domain Service** : Exécute la logique métier
 
-```pseudo
-// Mapping entre concepts DDD et concepts Blockchain
+```mermaid
+graph LR
+    subgraph DDD ["Concepts DDD"]
+        AR["Aggregate Root"]
+        REPO["Repository"]
+        DE["Domain Event"]
+        DS["Domain Service"]
+        VOB["Value Object"]
+    end
 
-CONCEPT DDD            →  CONCEPT BLOCKCHAIN
-─────────────────────────────────────────────────────
-Aggregate Root         →  Smart Contract
-    // Le smart contract est le gardien de la cohérence
-    // Toute modification passe par ses fonctions publiques
+    subgraph BC ["Concepts Blockchain"]
+        SC["Smart Contract<br/><i>Gardien de la cohérence</i>"]
+        ST["Storage du Smart Contract<br/><i>Immuable et auditable</i>"]
+        EV["Event Solidity (emit)<br/><i>Loggés sur la blockchain</i>"]
+        FN["Fonction du Smart Contract<br/><i>Exécution déterministe</i>"]
+        SR["Struct Solidity<br/><i>Données liées sans identité</i>"]
+    end
 
-Repository             →  État du Smart Contract (storage)
-    // Les données sont persistées directement sur la blockchain
-    // Immuable et auditable par nature
-
-Domain Event           →  Event Solidity (emit)
-    // Les événements Solidity sont les Domain Events
-    // Ils sont loggés sur la blockchain et accessibles à tous
-
-Domain Service         →  Fonction du Smart Contract
-    // La logique métier est encodée dans les fonctions
-    // Elle est exécutée de manière déterministe par tous les nœuds
-
-Value Object           →  Struct Solidity
-    // Les structs Solidity sont des VO naturels
-    // Elles regroupent des données liées sans identité propre
+    AR --> SC
+    REPO --> ST
+    DE --> EV
+    DS --> FN
+    VOB --> SR
 ```
