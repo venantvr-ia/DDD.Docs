@@ -120,13 +120,13 @@ surface_attaque = FONCTION(volume_code):
 
 ## Contenu de la documentation
 
-- [Ubiquitous Language](ubiquitous-language.md) - Le langage partagé entre développeurs et experts métier
-- [Architecture](architecture.md) - Patterns et structures fondamentaux du DDD
-- [Actors & Events](actors.md) - Actor Model et Domain Events avec RabbitMQ
-- [Trading](trading.md) - Application du DDD au domaine du trading algorithmique
-- [Blockchain](blockchain.md) - Architecture blockchain et smart contracts
-- [Regulations](regulations.md) - Conformité réglementaire et aspects légaux
-- [Mono-repo](mono-repo.md) - Principes d'architecture et organisation du code
+- [Ubiquitous Language](UBIQUITOUS-LANGUAGE.md) - Le langage partagé entre développeurs et experts métier
+- [Architecture](ARCHITECTURE.md) - Patterns et structures fondamentaux du DDD
+- [Actors & Events](ACTORS.md) - Actor Model et Domain Events avec RabbitMQ
+- [Trading](TRADING.md) - Application du DDD au domaine du trading algorithmique
+- [Blockchain](BLOCKCHAIN.md) - Architecture blockchain et smart contracts
+- [Regulations](REGULATIONS.md) - Conformité réglementaire et aspects légaux
+- [Mono-repo](MONO-REPO.md) - Principes d'architecture et organisation du code
 
 ## Profil recherché
 
